@@ -1,0 +1,38 @@
+Python基础入门
+	1.1课程介绍 & 为什么Python如此受欢迎？	2
+	1.2安装Python和配置环境	6
+	1.3 配置PyDev	7
+	1.4 sublime安装python	7
+	1.5 安装Anaconda数据科学环境	7
+	1.6 安装pycharm的IDE工具	8
+	2.1 Package以及数据类型1	8
+	2.2import和from...import区别（补充）	9
+	2.3 数据类型2: Numeric & String	10
+	2.4 数据类型3：字符串、变量	12
+	2.5随机数生成的几种方式	13
+	3.1List基础数据结构	14
+	3.2part2-zip函数和enumerate函数	16
+	3.3part3_List函数操作	16
+	3.4part2列表list与元祖tuple的比较	17
+	3.5Dictionary字典数据结构	18
+	3.6列表推导（补充）	21
+	3.7元素和生成器推导（补充）	26
+	3.8字典（补充）	27
+	3.9集合补充（补充）	30
+	4.1part1_函数	31
+	4.2part2_函数	33
+	4.3函数补充内容	34
+	4.4 lambda表达式	36
+	5.1控制流1_if_for语句	36
+	5.2控制流2_while_range语句	38
+	5.3控制流2_break_continue语句	39
+	6.1 输入输出方式介绍(Output Format)	40
+	6.2_读写文件File_IO	41
+	6.3_错误与异常处理Error__Exceptions	41
+	7.1_面向对象编程Object-Oriented	43
+	7.2面向对象实现加减乘除简单四则运算(补充)	43
+	8.1图形界面GUI	44
+	8.2猜数字小游戏	44
+	9.print换行打印问题？	46
+	10.利用蒙特克罗方法求解圆周率近似值问题
+	11.卷积问题Python实战

@@ -1,0 +1,77 @@
+广告平台：
+1.电商项目：通过电商项目产生数据
+	数据：
+		1.用户数据---mysql
+		2.商品数据---mysql
+		3.订单数据---mysql
+		4.访问数据---mysql
+		5.购物车数据--redis
+		6.秒杀数据---redis
+		7.广告数据---mysql
+1.点击流日志分析
+	埋点--nginx+lua---flume收集----用户点击行为数据
+	(用户正在浏览商品信息、页面信息、浏览器数据、sessionis，用户来源)
+2.用户画像的构建
+	使用用户行为数据，通过Python的SKlearn中的决策树算法构建标签系统
+		用户性别模型
+		用户汽车模型
+		用户马甲模型
+		用户忠诚度模型
+		用户的身高和尺码模型
+3.电商平台推荐系统
+	基于Spark MLLIB的ALS因子分解方法，进行协同过滤推荐
+		数据来源：来源于电商平台后台数据，通过HDFS中，通过Hive做数据筛选得到用户打分矩阵对应的3列
+		数据采集格式：用户id：物品id：打分值rating
+		数据的清洗：对用户和物品矩阵数据进行数据的预处理
+		推荐系统建模：使用Spark的ALS交替最小二乘法解决基于物品的推荐和基于用户的推荐
+		推荐方式：选择给全部用户推荐指定数量商品或将全部商品推荐给指定数量的用户
+		用户冷启动问题：通过Spark的ALS代码中设定nan或drop的方式处理冷启动问题
+		关于商品的去重问题：可以通过select(als.getItemCol).distinct()进行
+			// Generate top 10 movie recommendations for a specified set of users
+			val users = ratings.select(als.getUserCol).distinct().limit(3)
+			val userSubsetRecs = model.recommendForUserSubset(users, 10)
+			// Generate top 10 user recommendations for a specified set of movies
+			val movies = ratings.select(als.getItemCol).distinct().limit(3)
+			val movieSubSetRecs = model.recommendForItemSubset(movies, 10)
+		对ALS代码进行参数调优
+			numBlocks： is the number of blocks the users and items will be partitioned into in order to parallelize computation (defaults to 10).
+			rank：is the number of latent factors in the model (defaults to 10).
+			maxIter： is the maximum number of iterations to run (defaults to 10).
+			regParam： specifies the regularization parameter in ALS (defaults to 1.0).
+			implicitPrefs： specifies whether to use the explicit feedback ALS variant or one adapted for implicit feedback data (defaults to false which means using explicit feedback).
+			alpha： is a parameter applicable to the implicit feedback variant of ALS that governs the baseline confidence in preference observations (defaults to 1.0).
+			nonnegative： specifies whether or not to use nonnegative constraints for least squares (defaults to false).
+	基于Spark ML的FP-Growth算法进行电商数据的频繁项挖掘和规则学习
+4.电商平台Ctr点击率预估系统
+	基于GBDT+LR进行点击率预估
+
+
+项目名称：电商广告平台CTR点击流预估分析
+项目描述：通过对电商平台的广告数据、商品数据、用户特征数据、用户行为数据进行采集，
+通过Spark大规模机器学习平台进行综合分析，使用GBDT算法提取关键特征，利用逻辑斯特回
+归算法进行CTR点击率预估，结合平台广告组的CPC计费方式产生点击率预估的最终结果列表，
+从而实现智能化广告投放的效果。
+项目架构：通过flume采集用户、广告等业务数据，并存储到HDFS中，通过MR做基础数据清洗，
+得到用户、广告多个维度的特征数据，使用Hive分析和统计用户和广告等业务，包括用户行为
+购买、浏览数据分析。通过特征数据的预处理、基本统计计算，利用机器学习算法构建智能广告
+投放系统。
+项目职责：
+	1.参与广告组智能广告平台的技术选型及算法预研。
+	2.负责关键特征的组合和筛选，根据平台业务得到广告创意特征，包括图片
+标题文字、价格、销量、推广商品所属的类目等特征，以及环境特征：用户和事件等
+点击反馈特征（计算历史上包含该特征的点击率）。
+组合特征（query与ad标题匹配term数）
+	3.通过Hive实现基于Query分析：类目，属性  同义词，相似query的统计分析
+	4.负责MR清洗用户和广告数据，将清洗后的数据进一步通过Hive做进一步分析。
+	5.通过Hive统计分析得到广告投放率、用户的点击量、浏览量等业务指标。
+	6.负责利用SparkML库对类别型数据和连续型数值进行处理，如用户的性别及商品的好评度
+	7.负责利用SparkML的GBDT树选择最优特征。
+	8.负责利用SparkML的LogisticRegesionModel训练模型，使用的是近1个月的数据作为训练数据，
+	接下来的一天的数据作为测试数据，实现点击率预估。
+	9.负责通过调整LR中的一些参数调优模型，如增加Elaticnet正则化参数控制模型复杂度，防止模型过拟合
+	10.负责前期特征数据主要集中在query数据和ad数据，后期考虑到广告的个性化，通过增加
+	user特征，在一定程度上改进了广告投放的效果。
+	11.负责通过对模型参数优化方法进行对比，选择SGD作为最优化参数方法
+	12.负责对模型进行离线评估：在测试数据上，评测模型的AUC，MSE指标
+	13.参与人工评估：通过随机选择query组合来对比新旧版的相关性效果本
+	14.负责在线评估(拿一部分线上用户来做测试，以CTR结果为住户)
